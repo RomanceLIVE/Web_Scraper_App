@@ -1,5 +1,7 @@
 import requests
 import selectorlib
+import smtplib, ssl
+import os
 
 URL = "http://programmer100.pythonanywhere.com/tours/"
 HEADERS = {
@@ -8,7 +10,7 @@ HEADERS = {
 
 def scrape(url):
     # Scrape the page source
-    response = requests.get(URL, headers=HEADERS)
+    response = requests.get(url, headers=HEADERS)
     source = response.text
     return source
 
@@ -19,12 +21,24 @@ def extract(source):
     return value
 
 
-def send_email():
+def send_email(message):
+    host = "smtp.gmail.com"
+    port = 465
+
+    username = "robert.horvath93@gmail.com"
+    password = "mpxfsbxuxubqztxp"
+
+    receiver = "robert.horvath93@gmail.com"
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL(host, port, context=context) as server:
+        server.login(username, password)
+        server.sendmail(username, receiver, message)
     print("Email sent")
 
 
 def store(extracted):
-    if extracted != "No upcoming tours":
+    if extracted and extracted != "No upcoming tours":
         # Check for duplicates
         with open("data.txt", "r") as file:
             existing_data = file.read().splitlines()
@@ -42,9 +56,9 @@ if __name__ == "__main__":
     scraped = scrape(URL)
     extracted = extract(scraped)
     print(extracted)
-    store(extracted)
+
     content = read(extracted)
     if extracted != "No upcoming tours":
         if extracted not in content:
             store(extracted)  # only store when event new
-            send_email()
+            send_email(message="New event !")
