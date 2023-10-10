@@ -5,27 +5,30 @@ import time
 import requests
 import selectorlib
 
+# Constants to access data from the url
 URL = "http://programmer100.pythonanywhere.com/tours/"
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
+# Connecting to the SQLite database
 connection = sqlite3.connect("data.db")
 
 
-
+# Function to scrape the page source
 def scrape(url):
-    # Scrape the page source
     response = requests.get(url, headers=HEADERS)
     source = response.text
     return source
 
 
+# Function to extract data from the source
 def extract(source):
     extractor = selectorlib.Extractor.from_yaml_file("extract.yaml")
     value = extractor.extract(source)["tours"]
     return value
 
 
+# Function to send email
 def send_email(message):
     host = "smtp.gmail.com"
     port = 465
@@ -42,6 +45,7 @@ def send_email(message):
     print("Email sent")
 
 
+# Function to store data in the database
 def store(extracted):
     row = extracted.split(",")
     row = [item.strip() for item in row]
@@ -50,6 +54,7 @@ def store(extracted):
     connection.commit()
 
 
+# Function to read data from the database
 def read(extracted):
     row = extracted.split(",")
     row = [item.strip() for item in row]
@@ -60,7 +65,9 @@ def read(extracted):
     print(rows)
     return rows
 
+# Main program execution
 if __name__ == "__main__":
+    # Continuously scrape and process data
     while True:
         scraped = scrape(URL)
         extracted = extract(scraped)
@@ -69,6 +76,7 @@ if __name__ == "__main__":
         if extracted != "No upcoming tours":
             row = read(extracted)
             if not row:
-                store(extracted)  # only store when event new
+                # Store only if event is new
+                store(extracted)
                 send_email(message="New event !")
         time.sleep(2)
