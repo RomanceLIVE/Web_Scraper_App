@@ -33,8 +33,8 @@ def send_email(message):
     host = "smtp.gmail.com"
     port = 465
 
-    username = "robert.horvath93@gmail.com"
-    password = "mpxfsbxuxubqztxp"
+    username = "yourgmail@gmail.com"
+    password = "gmailAPIpasskey"
 
     receiver = "robert.horvath93@gmail.com"
     context = ssl.create_default_context()
