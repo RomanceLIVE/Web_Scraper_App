@@ -31,10 +31,10 @@ class Email:
         host = "smtp.gmail.com"
         port = 465
 
-        username = "robert.horvath93@gmail.com"
-        password = "mpxfsbxuxubqztxp"
+        username = "yourgmail@gmail.com"
+        password = "gmailAPIpasskey"
 
-        receiver = "robert.horvath93@gmail.com"
+        receiver = "yourgmail@gmail.com"
         context = ssl.create_default_context()
 
         with smtplib.SMTP_SSL(host, port, context=context) as server:
